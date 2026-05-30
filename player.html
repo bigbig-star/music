@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🎵 夜舟 - 音乐播放</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            font-family: -apple-system, 'Helvetica Neue', sans-serif;
+            color: #fff;
+            padding: 20px;
+        }
+        .player {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px 30px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .cover {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #e94560, #533483);
+            margin: 0 auto 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            animation: spin 10s linear infinite paused;
+            box-shadow: 0 10px 40px rgba(233,69,96,0.3);
+        }
+        .cover.playing { animation-play-state: running; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        h1 { font-size: 22px; margin-bottom: 6px; font-weight: 600; }
+        .artist { font-size: 14px; color: rgba(255,255,255,0.5); margin-bottom: 30px; }
+        audio {
+            width: 100%;
+            margin-top: 10px;
+            border-radius: 30px;
+            outline: none;
+        }
+        audio::-webkit-media-controls-panel { background: rgba(255,255,255,0.1); }
+        .tips { font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="player">
+        <div class="cover" id="cover">🎵</div>
+        <h1>夜舟</h1>
+        <p class="artist">🎤 bigbig-star</p>
+        <audio id="audio" controls autoplay playsinline
+            src="https://cdn.jsdelivr.net/gh/bigbig-star/music@main/yezhou.mp3">
+            你的浏览器不支持音频播放
+        </audio>
+        <div class="tips">💡 如果卡顿，请稍等缓冲</div>
+    </div>
+    <script>
+        const audio = document.getElementById('audio');
+        const cover = document.getElementById('cover');
+        audio.addEventListener('play', () => cover.classList.add('playing'));
+        audio.addEventListener('pause', () => cover.classList.remove('playing'));
+        audio.addEventListener('ended', () => cover.classList.remove('playing'));
+    </script>
+</body>
+</html>
