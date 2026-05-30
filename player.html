@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>🎵 夜舟 - 音乐播放</title>
+    <title>🎵 夜舟</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -25,116 +25,41 @@
             max-width: 400px;
             text-align: center;
             box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.1);
         }
         .cover {
-            width: 200px;
-            height: 200px;
+            width: 180px; height: 180px;
             border-radius: 50%;
             background: linear-gradient(45deg, #e94560, #533483);
-            margin: 0 auto 30px;
+            margin: 0 auto 25px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 80px;
+            font-size: 70px;
             animation: spin 10s linear infinite paused;
-            box-shadow: 0 10px 40px rgba(233,69,96,0.3);
-            transition: opacity 0.3s;
         }
         .cover.playing { animation-play-state: running; }
-        .cover.loading { opacity: 0.5; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        h1 { font-size: 22px; margin-bottom: 6px; font-weight: 600; }
-        .artist { font-size: 14px; color: rgba(255,255,255,0.5); margin-bottom: 30px; }
-        audio {
-            width: 100%;
-            margin-top: 10px;
-            border-radius: 30px;
-            outline: none;
-        }
-        .status {
-            font-size: 13px;
-            color: rgba(255,255,255,0.4);
-            margin-top: 15px;
-            min-height: 20px;
-        }
-        .status.error { color: #ff6b6b; }
-        .status.loading { color: #ffd93d; }
+        h1 { font-size: 22px; margin-bottom: 5px; }
+        .artist { font-size: 14px; color: rgba(255,255,255,0.5); margin-bottom: 25px; }
+        audio { width: 100%; border-radius: 30px; outline: none; }
     </style>
 </head>
 <body>
     <div class="player">
         <div class="cover" id="cover">🎵</div>
         <h1>夜舟</h1>
-        <p class="artist">🎤 bigbig-star</p>
-        <audio id="audio" controls playsinline></audio>
-        <div class="status" id="status">🔄 正在加载音频...</div>
+        <p class="artist">bigbig-star</p>
+        <audio id="audio" controls playsinline preload="auto">
+            <source src="https://raw.githubusercontent.com/bigbig-star/music/main/yezhou.mp3" type="audio/mpeg">
+            <source src="https://bigbig-star.github.io/music/yezhou.mp3" type="audio/mpeg">
+        </audio>
     </div>
     <script>
         const audio = document.getElementById('audio');
         const cover = document.getElementById('cover');
-        const status = document.getElementById('status');
-
-        // 备选音频源（哪个能用用哪个）
-        const SOURCES = [
-            'https://bigbig-star.github.io/music/yezhou.mp3',
-            'https://cdn.jsdelivr.net/gh/bigbig-star/music@main/yezhou.mp3',
-            'https://raw.githubusercontent.com/bigbig-star/music/main/yezhou.mp3'
-        ];
-
-        function tryLoad(index) {
-            if (index >= SOURCES.length) {
-                status.textContent = '❌ 所有音频源都无法加载';
-                status.className = 'status error';
-                return;
-            }
-
-            const url = SOURCES[index];
-            status.textContent = `🔄 尝试加载 (${index + 1}/${SOURCES.length})...`;
-            status.className = 'status loading';
-            cover.classList.add('loading');
-
-            // 用 fetch 获取音频数据，绕过 Content-Type 限制
-            fetch(url)
-                .then(res => {
-                    if (!res.ok) throw new Error('HTTP ' + res.status);
-                    return res.arrayBuffer();
-                })
-                .then(buffer => {
-                    // 创建 Blob 并显式指定 MIME 类型
-                    const blob = new Blob([buffer], { type: 'audio/mpeg' });
-                    const blobUrl = URL.createObjectURL(blob);
-
-                    audio.src = blobUrl;
-                    status.textContent = '✅ 加载完成，点击播放 ▶️';
-                    status.className = 'status';
-                    cover.classList.remove('loading');
-
-                    // 加载完成后释放旧的 blob URL
-                    audio.onload = () => URL.revokeObjectURL(blobUrl);
-                })
-                .catch(err => {
-                    console.warn(`源 ${index + 1} 失败:`, err.message);
-                    tryLoad(index + 1);  // 尝试下一个源
-                });
-        }
-
-        // 开始加载
-        tryLoad(0);
-
         audio.addEventListener('play', () => cover.classList.add('playing'));
         audio.addEventListener('pause', () => cover.classList.remove('playing'));
         audio.addEventListener('ended', () => cover.classList.remove('playing'));
-
-        audio.addEventListener('error', () => {
-            status.textContent = '⚠️ 播放出错，尝试切换源...';
-            status.className = 'status error';
-            // 用户点击播放后发现不行，自动尝试下一个源
-            audio.src = '';
-            // 重新用 fetch 试试下一个
-            const currentIdx = SOURCES.findIndex(s => audio.src?.includes(s));
-            tryLoad(Math.max(0, currentIdx) + 1);
-        });
     </script>
 </body>
 </html>
